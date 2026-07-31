@@ -11,8 +11,6 @@ export const POKEDLE_CONSTANTS = {
     SUBCOMMAND_GUESS_DESCRIPTION: "Devine le Pokémon du jour",
     SUBCOMMAND_VIEW_NAME: "voir",
     SUBCOMMAND_VIEW_DESCRIPTION: "Affiche publiquement ton DLE actuel",
-    SUBCOMMAND_STATS_NAME: "stats",
-    SUBCOMMAND_STATS_DESCRIPTION: "Affiche tes statistiques Pokedle",
     OPTION_POKEMON_NAME: "nom",
     OPTION_POKEMON_DESCRIPTION: "Le nom du Pokémon",
 
