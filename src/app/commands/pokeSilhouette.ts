@@ -14,6 +14,7 @@ import { PokemonData } from "../utils/pokedle/gameLogic";
 import { POKE_SILHOUETTE_CONSTANTS } from "../utils/pokeSilhouette/constants";
 import { buildNameIndex, normalizeName } from "../utils/pokeSilhouette/answerMatching";
 import { PokemonImages, renderPokemonImages } from "../utils/pokeSilhouette/silhouetteImage";
+import { PokeSilhouetteStatsService } from "../utils/pokeSilhouette/silhouetteStats";
 
 // Running games, kept in memory on purpose: a collector does not survive a restart,
 // so a persisted lock would leave ghost games behind after a reboot.
@@ -264,6 +265,20 @@ export default {
                 } catch (error) {
                     otterlogs.error(`Impossible de révéler le Pokémon de poke-silhouette: ${error}`);
                 }
+
+                // Recorded last, and on its own: PocketBase being down must never cost the
+                // players their reveal. The service swallows its own errors.
+                await PokeSilhouetteStatsService.recordGame({
+                    pokemonId: pokemon.id,
+                    pokemonName: pokemon.name,
+                    isPublic,
+                    hostDiscordId: userId,
+                    channelId,
+                    guildId: interaction.guildId,
+                    startedAt: new Date(startedAt),
+                    durationMs: POKE_SILHOUETTE_CONSTANTS.GAME_DURATION_MS,
+                    winners: winners.map(winner => ({ discordUserId: winner.userId, elapsedMs: winner.elapsedMs })),
+                });
             });
 
             collectorStarted = true;

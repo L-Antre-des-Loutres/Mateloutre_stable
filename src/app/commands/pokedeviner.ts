@@ -60,10 +60,6 @@ export default {
         .addSubcommand(sub =>
             sub.setName(POKEDLE_CONSTANTS.SUBCOMMAND_VIEW_NAME)
                 .setDescription(POKEDLE_CONSTANTS.SUBCOMMAND_VIEW_DESCRIPTION)
-        )
-        .addSubcommand(sub =>
-            sub.setName(POKEDLE_CONSTANTS.SUBCOMMAND_STATS_NAME)
-                .setDescription(POKEDLE_CONSTANTS.SUBCOMMAND_STATS_DESCRIPTION)
         ) as SlashCommandBuilder,
 
     async autocomplete(interaction: AutocompleteInteraction): Promise<void> {
@@ -136,7 +132,7 @@ export default {
             const diffHours = (now.getTime() - startedDate.getTime()) / (1000 * 60 * 60);
             
             // Si la partie date de plus de 6h, n'est pas déjà gagnée (pas supprimée du cache)
-            if (diffHours >= 6 && session.attemptsIds.length > 0 && subcommand !== POKEDLE_CONSTANTS.SUBCOMMAND_STATS_NAME) {
+            if (diffHours >= 6 && session.attemptsIds.length > 0) {
                 // Marquer dans PB comme expiré
                 if (session.pbRecordId) {
                     try {
@@ -339,33 +335,6 @@ export default {
             }
 
             await interaction.editReply({ embeds: [embed], files: [attachment] });
-
-        } else if (subcommand === POKEDLE_CONSTANTS.SUBCOMMAND_STATS_NAME) {
-            const stats = await PokedleStatsService.getStatsForUser(userId);
-
-            if (stats.length === 0) {
-                await interaction.editReply({ content: "Tu n'as encore aucune victoire enregistrée au Pokedle. Lance-toi avec `/pokedle guess` !" });
-                return;
-            }
-
-            const totalWins    = stats.length;
-            const bestTry      = Math.min(...stats.map(s => s.nb_try));
-            const averageTries = (stats.reduce((acc, s) => acc + s.nb_try, 0) / totalWins).toFixed(1);
-            const lastWin      = stats[0]; // déjà trié par -created
-            const lastWinDate  = new Date(lastWin.created).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
-            const embed = new EmbedBuilder()
-                .setTitle(`📊 Stats Pokedle de ${displayName}`)
-                .setColor((process.env.BOT_COLOR || "#f89800") as ColorResolvable)
-                .addFields(
-                    { name: '🏆 Victoires totales',   value: `**${totalWins}**`,          inline: true },
-                    { name: '⚡ Meilleur score',       value: `**${bestTry}** essai(s)`,   inline: true },
-                    { name: '📈 Moyenne',              value: `**${averageTries}** essais`, inline: true },
-                    { name: '🕐 Dernière victoire',    value: `**${lastWin.pokemon_name}** le ${lastWinDate} en **${lastWin.nb_try}** essai(s)`, inline: false },
-                )
-                .setFooter({ text: 'Seules les victoires sont comptabilisées.' });
-
-            await interaction.editReply({ embeds: [embed] });
         }
     }
 } as SlashCommand;
