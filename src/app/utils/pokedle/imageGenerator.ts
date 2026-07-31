@@ -1,6 +1,7 @@
 import { createCanvas, loadImage, registerFont } from 'canvas';
 import { PokemonData, comparePokemonV2, ComparisonResult } from './gameLogic';
 import { POKEDLE_COLORS, POKEDLE_CONSTANTS } from './constants';
+import { loadSprite } from '../papi/spriteLoader';
 import axios from 'axios';
 import path from 'path';
 
@@ -25,25 +26,6 @@ const COLORS: Record<ComparisonResult | 'bg' | 'text' | 'border', string> = {
     text: POKEDLE_COLORS.TEXT,
     border: POKEDLE_COLORS.BORDER
 };
-
-/**
- * Charge un sprite Pokémon depuis une URL. Renvoie null si le chargement échoue.
- */
-async function loadSprite(url: string): Promise<ReturnType<typeof loadImage> | null> {
-    try {
-        const PAPI_URL = process.env.PAPI_URL || 'http://localhost:8080';
-        const finalUrl = url.startsWith('/') ? `${PAPI_URL}${url}` : url;
-        const response = await axios.get(finalUrl, { 
-            responseType: 'arraybuffer',
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
-            }
-        });
-        return await loadImage(Buffer.from(response.data));
-    } catch {
-        return null;
-    }
-}
 
 /**
  * Génère une image buffer représentant le tableau des essais.
