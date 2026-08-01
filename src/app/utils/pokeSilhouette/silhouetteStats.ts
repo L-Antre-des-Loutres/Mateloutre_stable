@@ -16,7 +16,6 @@ export interface SilhouetteGameRecord {
     is_public: boolean;
     host: string;
     channel_id: string;
-    guild_id: string;
     started_at: string;
     duration_ms: number;
     found: boolean;
@@ -48,7 +47,6 @@ export interface SilhouetteGameInput {
     isPublic: boolean;
     hostDiscordId: string;
     channelId: string;
-    guildId: string | null;
     startedAt: Date;
     durationMs: number;
     /** Winners already sorted fastest first. */
@@ -61,6 +59,19 @@ export interface SilhouetteUserStats {
     bestMs: number;
     averageMs: number;
     lastWin: { pokemonName: string; elapsedMs: number; playedAt: string } | null;
+}
+
+/**
+ * Logs which fields PocketBase refused. Without this a 400 only says "Failed to create
+ * record", and a required field rejecting a zero value looks like a generic failure.
+ */
+function logValidationDetails(error: unknown): void {
+    if (!error || typeof error !== "object" || !("data" in error)) return;
+
+    const details = (error as { data?: { data?: unknown } }).data?.data;
+    if (details) {
+        otterlogs.error(`PokeSilhouetteStatsService: champs refusés par PocketBase : ${JSON.stringify(details)}`);
+    }
 }
 
 export class PokeSilhouetteStatsService {
@@ -85,7 +96,6 @@ export class PokeSilhouetteStatsService {
                     is_public: input.isPublic,
                     host: hostRecordId,
                     channel_id: input.channelId,
-                    guild_id: input.guildId ?? "",
                     started_at: input.startedAt.toISOString(),
                     duration_ms: input.durationMs,
                     found: input.winners.length > 0,
@@ -117,10 +127,12 @@ export class PokeSilhouetteStatsService {
                     }, { requestKey: null })
                 ).catch(error => {
                     otterlogs.error(`PokeSilhouetteStatsService: score de ${winner.discordUserId} non enregistré : ${error}`);
+                    logValidationDetails(error);
                 });
             }));
         } catch (error) {
             otterlogs.error(`PokeSilhouetteStatsService: manche non enregistrée : ${error}`);
+            logValidationDetails(error);
         }
     }
 

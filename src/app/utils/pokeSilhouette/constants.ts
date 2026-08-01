@@ -10,6 +10,12 @@ export const POKE_SILHOUETTE_CONSTANTS = {
     OPTION_PUBLIC_YES_LABEL: "Oui",
     OPTION_PUBLIC_NO: "non",
     OPTION_PUBLIC_NO_LABEL: "Non",
+    OPTION_INFINITE_NAME: "infini",
+    OPTION_INFINITE_DESCRIPTION: "Oui : enchaîne les manches tant que quelqu'un joue. (Non par défaut)",
+    OPTION_INFINITE_YES: "oui",
+    OPTION_INFINITE_YES_LABEL: "Oui",
+    OPTION_INFINITE_NO: "non",
+    OPTION_INFINITE_NO_LABEL: "Non",
 
     // Images
     SILHOUETTE_IMAGE_NAME: "poke-silhouette.png",
@@ -43,6 +49,8 @@ export const POKE_SILHOUETTE_CONSTANTS = {
     MSG_TIE: "Pas loin ! Vous êtes **{count}** à avoir trouvé **{pokemon}** à moins de {window} ms d'écart :\n{list}",
     MSG_TIE_LINE: "{medal} {user} - **{seconds}** secondes",
     MSG_TIE_MORE: "▫️ ... et **{count}** autres joueurs",
+    FOOTER_TEXT_INFINITE: "Manche {round} • {seconds} secondes • ✅ bonne réponse • ❌ mauvais Pokémon",
+    MSG_INFINITE_STOPPED: "🦦 Personne n'a tenté sa chance, la série s'arrête à **{round}** manche(s). Relancez `/poke-silhouette` pour rejouer !",
     EMBED_TIMEOUT_TITLE: "Temps écoulé !",
     MSG_TIMEOUT_PUBLIC: "Personne n'a trouvé... C'était **{pokemon}** !",
     MSG_TIMEOUT_SOLO: "Tu n'as pas trouvé... C'était **{pokemon}** !",
