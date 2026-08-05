@@ -146,11 +146,41 @@ export async function scrapeNews() {
 }
 
 /**
- * Vide le cache des sessions Pokedle.
- * Planifié tous les dimanches à minuit pour repartir sur une semaine propre.
+ * Nettoie le cache des sessions Pokedle.
+ * Planifié pour supprimer uniquement les parties inactives (plus de 6h).
  */
 export async function clearPokedleCache(): Promise<void> {
     const sizeBefore = pokedleTaskCache.size();
-    pokedleTaskCache.clear();
-    otterlogs.log(`🧹 Cache Pokedle vidé : ${sizeBefore} session(s) supprimée(s).`);
+    let deletedCount = 0;
+    const now = new Date();
+    const nowTime = now.getTime();
+    const todayISO = now.toLocaleDateString('en-CA');
+
+    for (const [key, value] of pokedleTaskCache.entries()) {
+        let isInactive = true;
+
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+            if ('startedAt' in value) {
+                const startedAt = (value as { startedAt?: string }).startedAt;
+                if (startedAt) {
+                    const startedDate = new Date(startedAt).getTime();
+                    const diffHours = (nowTime - startedDate) / (1000 * 60 * 60);
+                    if (diffHours < 6) {
+                        isInactive = false;
+                    }
+                }
+            }
+        }
+
+        if (key.includes(todayISO)) {
+            isInactive = false;
+        }
+
+        if (isInactive) {
+            pokedleTaskCache.delete(key);
+            deletedCount++;
+        }
+    }
+
+    otterlogs.log(`🧹 Cache Pokedle nettoyé : ${deletedCount} donnée(s) inactive(s) supprimée(s) sur ${sizeBefore}.`);
 }
