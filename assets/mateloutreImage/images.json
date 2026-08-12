@@ -1,0 +1,15 @@
+{
+  "images": [
+    {
+      "id": "protest",
+      "label": "Mateloutre en manifestation",
+      "image": "emote/protest.png",
+      "minChara": 1,
+      "maxChara": 60,
+      "textPositionX": 320,
+      "textPositionY": 160,
+      "rotation": -8.4,
+      "lineHeight": 2
+    }
+  ]
+}
